@@ -61,3 +61,4 @@ find ~/lol/auto/$sub 2>/dev/null -iname "*.gifv.jpg" -exec rename .gifv.jpg .giv
 rm /home/sage/.*_$sub
 echo ""
 echo ""
+#####
