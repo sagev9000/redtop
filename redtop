@@ -1,0 +1,63 @@
+#!/bin/bash
+input="$1"
+time=all
+
+if test -z "$1" ; then
+        input="randnsfw"
+#	input="random"
+	echo "No subreddit specified."
+	echo "Defaulting to $input."
+fi
+
+while getopts ":a:y:m:w:d:h:" opt; do
+  case $opt in
+    a)time=all;;
+    y)time=year;;
+    m)time=month;;
+    w)time=week;;
+    d)time=day;;
+    h)time=hour;;
+    \?)echo "Invalid option: -$OPTARG" >&2
+       echo "Choose one letter from 'aymwdh'" >&2
+       exit 1;;
+  esac
+input=$OPTARG
+done
+
+wget -q "reddit.com/r/$input/top/.rss?t=$time" -O ~/.rss
+sub=$(tr -d \\n < ~/.rss | tr \& \\n | grep "reddit.com/r/*.*/comments" -o | tail -n 1 | sed 's/.\{9\}$//' | cut -c 1-13 --complement)
+mv ~/.rss ~/.rss_$sub
+
+if ls ~/lol/auto | grep -q "$sub"; then
+        echo "$sub(u)" >> ~/.new
+	echo -e "\uf021  Updating $sub folder"
+else
+        echo "$sub" >> ~/.new
+	echo -e "\uf019  Downloading new content: $sub"
+fi
+
+mkdir 2>/dev/null "~/lol/auto/$sub"
+
+tr -d \\n < ~/.rss_$sub | tr \& \\n | grep imgur | cut -c 1-4 --complement | sed -e 's/$/.jpg/' > ~/.imgur_$sub
+imgur_num=$(cat ~/.imgur_$sub | wc -l)
+echo -e "\uf019  Downloading $imgur_num imgur links."
+wget -nd -q --no-clobber -p -P ~/lol/auto/$sub/ -i ~/.imgur_$sub
+
+tr -d \\n < ~/.rss_$sub | sed "s#\/\/#\n#g" | sed "s#\&#\n#g" | sed "s#www.##g"| grep gfy > ~/.gfycat_$sub 
+gfy_num=$(cat ~/.gfycat_$sub | wc -l)
+echo -e "\uf019  Downloading $gfy_num gfycat links."
+wget -nd -q --no-clobber -p -P ~/lol/auto/$sub/ -i ~/.gfycat_$sub
+
+tr -d \\n < ~/.rss_$sub | tr \< \\n | tr \; \\n | tr \& \\n | tr \> \\n | tr \" \\n | egrep 'xnxx|xhamster|xvideos|spankbang|vimeo|incestflix|pornhub|thumbzilla|youjizz|redtube|tube8|cliphunter|playvid|eporner|vid.me|youporn|beeg|spankwire|sexykarma|hardsextube|youtube|dailymotion|vimeo|soundgasm' | uniq -u > ~/.pvideos_$sub
+vid_num=$(cat ~/.pvideos_$sub | wc -l)
+echo -e "\uf019  Downloading $vid_num videos."
+xargs -P 6 -a ~/.pvideos_$sub -I {} youtube-dl -w -o "/home/sage/lol/auto/$sub/%(title)s.%(ext)s" {}
+
+find ~/lol/auto/$sub 2>/dev/null -not -name "*.mp4" -not -name "*.gifv" -not -name "*.png" -not -name "*.jpg" -not -name "*.gif" -delete
+find ~/lol/auto/$sub 2>/dev/null -iname "*.png.jpg" -exec rename .png.jpg .png '{}' \;
+find ~/lol/auto/$sub 2>/dev/null -iname "*.jpg.jpg" -exec rename .jpg.jpg .jpg '{}' \;
+find ~/lol/auto/$sub 2>/dev/null -iname "*.gif.jpg" -exec rename .gif.jpg .gif '{}' \;
+find ~/lol/auto/$sub 2>/dev/null -iname "*.gifv.jpg" -exec rename .gifv.jpg .givf '{}' \;
+rm /home/sage/.*_$sub
+echo ""
+echo ""
