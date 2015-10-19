@@ -24,9 +24,9 @@ while getopts ":a:y:m:w:d:h:" opt; do
 input=$OPTARG
 done
 
-wget -q "reddit.com/r/$input/top/.rss?t=$time" -O ~/.rss
+wget -q "reddit.com/r/$input/top/.rss?t=$time" -O ~/.$input_rss
 sub=$(tr -d \\n < ~/.rss | tr \& \\n | grep "reddit.com/r/*.*/comments" -o | tail -n 1 | sed 's/.\{9\}$//' | cut -c 1-13 --complement)
-mv ~/.rss ~/.rss_$sub
+mv ~/.$input_rss ~/.rss_$sub
 
 if ls ~/lol/auto | grep -q "$sub"; then
         echo "$sub(u)" >> ~/.new
