@@ -34,10 +34,9 @@ if ls ~/lol/auto | grep -q "$sub"; then
 else
         echo "$sub" >> ~/.new
 	echo -e "\uf019  Downloading new content: $sub"
+mkdir "~/lol/auto/$sub"
 fi
-
-mkdir 2>/dev/null "~/lol/auto/$sub"
-
+ 
 tr -d \\n < ~/.rss_$sub | tr \& \\n | grep imgur | cut -c 1-4 --complement | sed -e 's/$/.jpg/' > ~/.imgur_$sub
 imgur_num=$(cat ~/.imgur_$sub | wc -l)
 echo -e "\uf019  Downloading $imgur_num imgur links."
@@ -59,5 +58,4 @@ find ~/lol/auto/$sub 2>/dev/null -iname "*.jpg.jpg" -exec rename .jpg.jpg .jpg '
 find ~/lol/auto/$sub 2>/dev/null -iname "*.gif.jpg" -exec rename .gif.jpg .gif '{}' \;
 find ~/lol/auto/$sub 2>/dev/null -iname "*.gifv.jpg" -exec rename .gifv.jpg .givf '{}' \;
 rm /home/sage/.*_$sub
-echo ""
 echo ""
