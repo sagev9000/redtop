@@ -52,7 +52,6 @@ vid_num=$(cat ~/.pvideos_$sub | wc -l)
 echo -e "\uf019  Downloading $vid_num videos."
 xargs -P 6 -a ~/.pvideos_$sub -I {} youtube-dl -w -o "/home/sage/lol/auto/$sub/%(title)s.%(ext)s" {}
 
-find ~/lol/auto/$sub 2>/dev/null -not -name "*.mp4" -not -name "*.gifv" -not -name "*.png" -not -name "*.jpg" -not -name "*.gif" -delete
 find ~/lol/auto/$sub 2>/dev/null -iname "*.png.jpg" -exec rename .png.jpg .png '{}' \;
 find ~/lol/auto/$sub 2>/dev/null -iname "*.jpg.jpg" -exec rename .jpg.jpg .jpg '{}' \;
 find ~/lol/auto/$sub 2>/dev/null -iname "*.gif.jpg" -exec rename .gif.jpg .gif '{}' \;
