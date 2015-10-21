@@ -34,7 +34,7 @@ if ls ~/lol/auto | grep -q "$sub"; then
 else
         echo "$sub" >> ~/.new
 	echo -e "\uf019  Downloading new content: $sub"
-mkdir "~/lol/auto/$sub"
+	mkdir "~/lol/auto/$sub"
 fi
  
 tr -d \\n < ~/.rss_$sub | tr \& \\n | grep imgur | cut -c 1-4 --complement | sed -e 's/$/.jpg/' > ~/.imgur_$sub
@@ -42,12 +42,7 @@ imgur_num=$(cat ~/.imgur_$sub | wc -l)
 echo -e "\uf019  Downloading $imgur_num imgur links."
 wget -nd -q --no-clobber -p -P ~/lol/auto/$sub/ -i ~/.imgur_$sub
 
-tr -d \\n < ~/.rss_$sub | sed "s#\/\/#\n#g" | sed "s#\&#\n#g" | sed "s#www.##g"| grep gfy > ~/.gfycat_$sub 
-gfy_num=$(cat ~/.gfycat_$sub | wc -l)
-echo -e "\uf019  Downloading $gfy_num gfycat links."
-wget -nd -q --no-clobber -p -P ~/lol/auto/$sub/ -i ~/.gfycat_$sub
-
-tr -d \\n < ~/.rss_$sub | tr \< \\n | tr \; \\n | tr \& \\n | tr \> \\n | tr \" \\n | egrep 'xnxx|xhamster|xvideos|spankbang|vimeo|incestflix|pornhub|thumbzilla|youjizz|redtube|tube8|cliphunter|playvid|eporner|vid.me|youporn|beeg|spankwire|sexykarma|hardsextube|youtube|dailymotion|vimeo|soundgasm' | uniq -u > ~/.pvideos_$sub
+tr -d \\n < ~/.rss_$sub | tr \< \\n | tr \; \\n | tr \& \\n | tr \> \\n | tr \" \\n | egrep -i -f ~/git/redtop/source_list | uniq -u > ~/.pvideos_$sub
 vid_num=$(cat ~/.pvideos_$sub | wc -l)
 echo -e "\uf019  Downloading $vid_num videos."
 xargs -P 6 -a ~/.pvideos_$sub -I {} youtube-dl -w -o "/home/sage/lol/auto/$sub/%(title)s.%(ext)s" {}
