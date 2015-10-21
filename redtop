@@ -1,4 +1,6 @@
 #!/bin/bash
+#A script for downloading various media links (namely imgur and sites supported by youtube-dl) from subreddits.
+#Written by Sheg 
 input="$1" 
 time=all 	#Find top posts of all time, by default
 max_par=6	#Maximum parallel video downloads
