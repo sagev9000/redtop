@@ -4,6 +4,7 @@
 input="$1" 
 time=all 	#Find top posts of all time, by default
 max_par=6	#Maximum parallel video downloads
+dir=~/lol/auto	#Directory to download subs to
 
 if test -z "$1" ; then
         input="randnsfw"	#Default subreddit to pull from
@@ -31,26 +32,26 @@ wget -q "reddit.com/r/$input/top/.rss?t=$time" -O ~/.rss
 sub=$(tr \& \\n < ~/.rss  | grep "reddit.com/r/*.*/comments" -o | tail -n 1 | sed 's/.\{9\}$//' | cut -c 1-13 --complement)
 mv ~/.rss ~/.rss_$sub 
 
-if ls ~/lol/auto | grep -q "$sub"; then
+if ls $dir | grep -q "$sub"; then
         echo "$sub(u)" >> ~/.new
 	echo -e "\uf021  Updating $sub folder"
 else
         echo "$sub" >> ~/.new
 	echo -e "\uf019  Downloading new content: $sub"
-	mkdir "~/lol/auto/$sub"
+	mkdir "$dir/$sub"
 fi
  
 tr \& \\n < ~/.rss_$sub | grep imgur | cut -c 1-4 --complement | sed -e 's/$/.jpg/' > ~/.imgur_$sub
 echo -e "\uf019  Downloading $(cat ~/.imgur_$sub | wc -l) imgur links."
-wget -nd -q --no-clobber -p -P ~/lol/auto/$sub/ -i ~/.imgur_$sub
+wget -nd -q --no-clobber -p -P $dir/$sub/ -i ~/.imgur_$sub
 
 tr \< \\n < ~/.rss_$sub | tr \; \\n | tr \& \\n | tr \> \\n | tr \" \\n | egrep -i -f ~/git/redtop/source_list | uniq -u > ~/.pvideos_$sub
 echo -e "\uf019  Downloading $(cat ~/.pvideos_$sub | wc -l) videos."
-xargs -P $max_par -a ~/.pvideos_$sub -I {} youtube-dl -w -o "/home/sage/lol/auto/$sub/%(title)s.%(ext)s" {}
+xargs -P $max_par -a ~/.pvideos_$sub -I {} youtube-dl -w -o "$dir/$sub/%(title)s.%(ext)s" {}
 
-find ~/lol/auto/$sub 2>/dev/null -iname "*.png.jpg" -exec rename .png.jpg .png '{}' \;
-find ~/lol/auto/$sub 2>/dev/null -iname "*.jpg.jpg" -exec rename .jpg.jpg .jpg '{}' \;
-find ~/lol/auto/$sub 2>/dev/null -iname "*.gif.jpg" -exec rename .gif.jpg .gif '{}' \;
-find ~/lol/auto/$sub 2>/dev/null -iname "*.gifv.jpg" -exec rename .gifv.jpg .givf '{}' \;
-rm /home/sage/.*_$sub
+find $dir/$sub 2>/dev/null -iname "*.png.jpg" -exec rename .png.jpg .png '{}' \;
+find $dir/$sub 2>/dev/null -iname "*.jpg.jpg" -exec rename .jpg.jpg .jpg '{}' \;
+find $dir/$sub 2>/dev/null -iname "*.gif.jpg" -exec rename .gif.jpg .gif '{}' \;
+find $dir/$sub 2>/dev/null -iname "*.gifv.jpg" -exec rename .gifv.jpg .givf '{}' \;
+rm ~/.*_$sub
 echo ""
