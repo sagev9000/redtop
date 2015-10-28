@@ -47,7 +47,7 @@ wget -nd -q --no-clobber -p -P $dir/$sub/ -i ~/.imgur_$sub
 
 tr \< \\n < ~/.rss_$sub | tr \; \\n | tr \& \\n | tr \> \\n | tr \" \\n | egrep -i -f ~/git/redtop/source_list | uniq -u > ~/.pvideos_$sub
 echo -e "\uf019  Downloading $(cat ~/.pvideos_$sub | wc -l) videos."
-xargs -P $max_par -a ~/.pvideos_$sub -I {} youtube-dl -w -o "$dir/$sub/%(title)s.%(ext)s" {}
+xargs -P $max_par -a ~/.pvideos_$sub -I {} youtube-dl 2>/dev/null -w -o "$dir/$sub/%(title)s.%(ext)s" {}
 
 find $dir/$sub 2>/dev/null -iname "*.png.jpg" -exec rename .png.jpg .png '{}' \;
 find $dir/$sub 2>/dev/null -iname "*.jpg.jpg" -exec rename .jpg.jpg .jpg '{}' \;
