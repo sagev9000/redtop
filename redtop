@@ -47,10 +47,11 @@ echo -e "\uf019  Downloading $(cat ~/.imgur_$sub | wc -l) imgur links."
 wget -nd -q --no-clobber -p -P $dir/$sub/ -i ~/.imgur_$sub
 
 #Ugly but increasingly functional text parser
-#Currently activated when no imgur links are found
-if [[ $(cat ~/.imgur_$sub | wc -l) = 0 ]]; then
+##Currently activated when no imgur links are found
+#Currently activated every time
+#if [[ $(cat ~/.imgur_$sub | wc -l) = 0 ]]; then
 tr \< \\n < ~/.rss_$sub | tr \> \\n | sed 's/\&amp\;quot\;/\"/g' | sed 's/\&lt\;\/p\&gt\;/\n/g' | sed 's/\&lt\;p\&gt\;/\n/g' | sed "s/\&amp\;\#39\;/\'/g" | sed "/\/title/d" | sed '/item$/d' | sed '/pubDate$/d' | sed '/description$/d' | sed '/link$/d' | sed '/channel$/d' | egrep -v "\?xml|version=|/description|/item|https://|\;|\/guid|\/pubDate|PermaLink|\/link|\/channel|\/rss" | tr -s '\n' | sed 's/title/\n\n\nTITLE/g' > $dir/$sub/top_$time.txt
-fi
+#fi
 
 tr \< \\n < ~/.rss_$sub | tr \; \\n | tr \& \\n | tr \> \\n | tr \" \\n | egrep -i -f ~/git/redtop/source_list |grep http | uniq -u > ~/.pvideos_$sub
 echo -e "\uf019  Downloading $(cat ~/.pvideos_$sub | wc -l) videos."
