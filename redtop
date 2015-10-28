@@ -49,7 +49,7 @@ wget -nd -q --no-clobber -p -P $dir/$sub/ -i ~/.imgur_$sub
 #Currently activated when no imgur links are found
 
 if [[ $(cat ~/.imgur_$sub | wc -l) = 0 ]]; then
-tr \< \\n < ~/.rss_$sub | tr \> \\n | sed 's/\&amp\;quot\;/\"/g' | sed 's/\&lt\;\/p\&gt\;/\n/g' | sed 's/\&lt\;p\&gt\;/\n/g' | sed "s/\&amp\;\#39\;/\'/g" | sed "/\/title/d" | sed '/item$/d' | sed '/pubDate$/d' | sed '/description$/d' | sed '/link$/d' | egrep -v "/description|/item|https://|\;|\/guid|\/pubDate|PermaLink|\/link|\/channel|\/rss" | tr -s '\n' | sed 's/title/\n\n\nTITLE/g' > $dir/$sub/top_$time.txt
+tr \< \\n < ~/.rss_$sub | tr \> \\n | sed 's/\&amp\;quot\;/\"/g' | sed 's/\&lt\;\/p\&gt\;/\n/g' | sed 's/\&lt\;p\&gt\;/\n/g' | sed "s/\&amp\;\#39\;/\'/g" | sed "/\/title/d" | sed '/item$/d' | sed '/pubDate$/d' | sed '/description$/d' | sed '/link$/d' | sed '/channel$/d' | egrep -v "\?xml|version=|/description|/item|https://|\;|\/guid|\/pubDate|PermaLink|\/link|\/channel|\/rss" | tr -s '\n' | sed 's/title/\n\n\nTITLE/g' > $dir/$sub/top_$time.txt
 fi
 
 tr \< \\n < ~/.rss_$sub | tr \; \\n | tr \& \\n | tr \> \\n | tr \" \\n | egrep -i -f ~/git/redtop/source_list | uniq -u > ~/.pvideos_$sub
