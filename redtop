@@ -8,8 +8,7 @@ dir=~/lol/auto	#Directory to download subs to
 vid_max=9999 	#Maximum video links to try
 
 if test -z "$1" ; then
-        input="randnsfw"	#Default subreddit to pull from
-	#input="random"
+	input="random"
 	echo "No subreddit specified."
 	echo "Defaulting to $input."
 fi
@@ -48,9 +47,10 @@ wget -nd -q --no-clobber -p -P $dir/$sub/ -i ~/.imgur_$sub
 
 #Ugly but increasingly functional text parser
 #Currently activated every time the script is run
-tr \< \\n < ~/.rss_$sub | tr \> \\n | sed "s/\&amp\;quot\;/\"/g; s/\&lt\;\/p\&gt\;/\n/g; s/\&lt\;p\&gt\;/\n/g; s/\&amp\;\#39\;/\'/g; /\/title/d; /item$/d; /pubDate$/d; /description$/d; /link$/d; /channel$/d" | egrep -v "\?xml|version=|/description|/item|https://|\;|\/guid|\/pubDate|PermaLink|\/link|\/channel|\/rss" | tr -s '\n' | sed 's/title/\n\n\nTITLE/g' > $dir/$sub/top_$time.txt
+#Maaay be broken from the switch to sed.
+sed "s/&lt;em&gt;/\*/g; s/&lt;\/em&gt;/\*/g; s/</\n/g; s/>/\n/g; s/&amp;quot;/\"/g; s/&lt;\/p&gt;/\n/g; s/&lt;p&gt;/\n/g; s/&amp;#39;/\'/g;" ~/.rss_$sub | egrep -v "\?xml|version=|/description|^?item|^/*$|https://|\;|\/guid|\/pubDate|PermaLink|\/link|\/channel|\/rss" | tr -s '\n' | sed 's/title/\n\n\nTITLE/g' > $dir/$sub/top_$time.txt
 
-tr \< \\n < ~/.rss_$sub | tr \; \\n | tr \& \\n | tr \> \\n | tr \" \\n | egrep -i -f ~/git/redtop/source_list |grep http | uniq -u > ~/.pvideos_$sub
+sed "s/</\n/g; s/\;/\n/g; s/\&/\n/g; s/>/\n/g; s/\"/\n/g" ~/.rss_$sub | egrep -i -f ~/git/redtop/source_list | grep http | uniq -u > ~/.pvideos_$sub
 echo -e "\uf019  Downloading $(cat ~/.pvideos_$sub | wc -l) videos."
 head -n $vid_max ~/.pvideos_$sub | xargs -P $max_par -I {} youtube-dl -w -o "$dir/$sub/%(title)s.%(ext)s" {}
 
