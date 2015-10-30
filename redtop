@@ -8,7 +8,7 @@ dir=~/lol/auto	#Directory to download subs to
 vid_max=9999 	#Maximum video links to try
 
 if test -z "$1" ; then
-	input="random"
+	input="random"	#Default subreddit
 	echo "No subreddit specified."
 	echo "Defaulting to $input."
 fi
